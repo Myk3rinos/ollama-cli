@@ -17,7 +17,8 @@ import { history, addEntry } from './synax-history.js';
 import loadingAnimation from './loading-animation.js';
 
 // Default model if none is running
-const DEFAULT_MODEL = 'deepseek-r1:14b';
+// const DEFAULT_MODEL = 'deepseek-r1:14b';
+const DEFAULT_MODEL = 'mistral';
 
 /**
  * Detect the currently running Ollama model
@@ -68,9 +69,9 @@ class DeepSeekCLI {
         console.log(chalk.cyan(asciiArt));
         console.log(chalk.gray(` Connected to: ${this.baseUrl}`));
         console.log(chalk.gray(` Model: ${this.model}${this.model === DEFAULT_MODEL ? ' (default)' : ''}`));
-        if (this.model === DEFAULT_MODEL) {
-            console.log(chalk.yellow(' Note: Using default model. Start Ollama with another model to use it automatically.'));
-        }
+        // if (this.model === DEFAULT_MODEL) {
+        //     console.log(chalk.yellow(' Note: Using default model. Start Ollama with another model to use it automatically.'));
+        // }
         console.log(chalk.gray(' Type "exit" or "quit" to quit, "clear" to clear history'));
         console.log(chalk.gray(' Type "help" to see available commands\n'));
     }
@@ -269,7 +270,7 @@ class DeepSeekCLI {
     // Utilise la fonction confirmExecution importée
 
     start() {
-        console.log(chalk.green('DeepSeek-R1:14b CLI started!'));
+        console.log(chalk.green(`${this.model} CLI started!`));
         // console.log(chalk.green('🚀 DeepSeek-R1:14b CLI started!'));
         console.log(chalk.gray('Type "help" to see available commands\n'));
         
@@ -296,7 +297,7 @@ class DeepSeekCLI {
 async function main() {
     const args = process.argv.slice(2);
     let baseUrl = "http://localhost:11434";
-    let model = "deepseek-r1:14b";
+    let model = modelName;
     
     // Parsing des arguments
     for (let i = 0; i < args.length; i++) {
