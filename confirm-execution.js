@@ -2,9 +2,9 @@ import readline from 'readline';
 import chalk from 'chalk';
 
 /**
- * Demande à l'utilisateur de confirmer l'exécution d'une commande via flèches ←/→ ou ↑/↓
- * @param {string} cmd - La commande à exécuter
- * @returns {Promise<boolean>} true si l'utilisateur confirme, false sinon
+ * Asks the user to confirm command execution using arrow keys ←/→ or ↑/↓
+ * @param {string} cmd - The command to execute
+ * @returns {Promise<boolean>} true if the user confirms, false otherwise
  */
 const confirmExecution = (cmd) => {
     return new Promise(resolve => {
@@ -12,27 +12,27 @@ const confirmExecution = (cmd) => {
         const stdout = process.stdout;
 
         if (!stdin.isTTY) {
-            // Fallback simple si pas en TTY
+            // Simple fallback if not in TTY
             const rl = readline.createInterface({ input: stdin, output: stdout });
-            rl.question(chalk.yellow(`\nAutoriser l'exécution de "${cmd}" ? (y/N): `), answer => {
+            rl.question(chalk.yellow(`\nAuthorize execution of "${cmd}"? (y/N): `), answer => {
                 rl.close();
                 resolve(['y', 'o'].includes(answer.trim().toLowerCase()));
             });
             return;
         }
 
-        const choices = [`Exécuter la commande`, 'Annuler'];
+        const choices = [`Execute command`, 'Cancel'];
         let index = 0;
         let lastRenderHeight = 0;
 
         function render() {
-            // Sauvegarder la position du curseur
+            // Save cursor position
             stdout.cursorTo(0);
             
-            // Calculer combien de lignes on doit effacer
-            const linesToClear = lastRenderHeight || 5; // Par défaut, effacer 5 lignes
+            // Calculate how many lines to clear
+            const linesToClear = lastRenderHeight || 5; // By default, clear 5 lines
             
-            // Effacer les lignes précédentes
+            // Clear previous lines
             for (let i = 0; i < linesToClear; i++) {
                 stdout.clearLine(0);
                 if (i < linesToClear - 1) {
@@ -41,13 +41,13 @@ const confirmExecution = (cmd) => {
                 }
             }
             
-            // Revenir au début de la zone de rendu
+            // Return to the beginning of the render area
             stdout.cursorTo(0);
             
-            // Afficher le message et la commande
-            const message = `${chalk.magenta(`Autoriser l'exécution de :`)}${chalk.gray(`\n"${cmd}"`)}\n`;
+            // Display the message and command
+            const message = `${chalk.magenta(`Authorize execution of:`)}${chalk.gray(`\n"${cmd}"`)}\n`;
             
-            // Afficher les choix
+            // Display choices
             const choicesText = choices.map((c, i) => 
                 i === index ? chalk.blue(`> ${c}`) : `  ${c}`
             ).join('\n');

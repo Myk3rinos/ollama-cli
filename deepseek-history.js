@@ -1,16 +1,16 @@
 // deepseek-history.js
-// Gestion centralisée de l'historique pour DeepSeek CLI.
+// Centralized history management for DeepSeek CLI.
 
 const history = [];
 
 /**
- * Ajoute une entrée à l'historique et limite sa taille à 20 éléments.
- * @param {string} entry - Ligne à ajouter dans l'historique.
+ * Adds an entry to the history and limits its size to 20 items.
+ * @param {string} entry - Line to add to the history.
  */
 export function addEntry(entry) {
   history.push(entry);
   if (history.length > 20) {
-    // Supprime les plus anciennes entrées pour conserver seulement les 20 dernières
+    // Remove the oldest entries to keep only the last 20
     history.splice(0, history.length - 20);
   }
 }
