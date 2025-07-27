@@ -1,24 +1,58 @@
 #!/usr/bin/env node
 
 /**
- * DeepSeek CLI - Simple interface to communicate with DeepSeek-R1:14b
- * Version adapted from mistral-cli for DeepSeek-R1:14b
- * Uses Ollama as a backend to serve the DeepSeek model
+ * CLI Interface for LLM models with Ollama
+ * Supports multiple models like DeepSeek, Mistral, etc.
+ * Usage: node deepseek-cli.js [model-name]
+ * Example: node deepseek-cli.js mistral:7b
  */
 
 import readline from 'readline';
 import chalk from 'chalk';
 import { runAction } from './action-agent.js';
-import asciiArt from './deepseek-ascii.js';
-import prePrompt from './deepseek-preprompt.js';
+import asciiArt from './synax-ascii.js';
+import prePrompt from './synax-preprompt.js';
 import confirmExecution from './confirm-execution.js';
-import { history, addEntry } from './deepseek-history.js';
+import { history, addEntry } from './synax-history.js';
 import loadingAnimation from './loading-animation.js';
 
+// Default model if none is running
+const DEFAULT_MODEL = 'deepseek-r1:14b';
+
+/**
+ * Detect the currently running Ollama model
+ * @returns {Promise<string>} Name of the running model or default model if none found
+ */
+async function detectModel() {
+    try {
+        const response = await fetch('http://localhost:11434/api/tags');
+        if (!response.ok) throw new Error('Failed to fetch model info');
+        
+        const data = await response.json();
+        // Get the first running model or return default
+        const runningModel = data.models?.[0]?.name;
+        return runningModel || DEFAULT_MODEL;
+    } catch (error) {
+        console.log(chalk.yellow('⚠️  Could not detect running model, using default'));
+        return DEFAULT_MODEL;
+    }
+}
+
+// Detect model at startup
+let modelName = DEFAULT_MODEL;
+(async () => {
+    try {
+        modelName = await detectModel();
+    } catch (error) {
+        console.error(chalk.red('Error detecting model:'), error.message);
+    }
+})();
+
 class DeepSeekCLI {
-    constructor(baseUrl = "http://localhost:11434", model = "deepseek-r1:14b") {
+    constructor(baseUrl = "http://localhost:11434", model = null) {
         this.baseUrl = baseUrl;
-        this.model = model;
+        // Use provided model or the detected model
+        this.model = model || modelName;
         this.timeout = 60000; // Longer timeout for DeepSeek-R1:14b
         // Imported shared history
         this.history = history;
@@ -28,12 +62,15 @@ class DeepSeekCLI {
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: chalk.cyan('> ')
+            prompt: chalk.blue('> ')
         });
         
         console.log(chalk.cyan(asciiArt));
         console.log(chalk.gray(` Connected to: ${this.baseUrl}`));
-        console.log(chalk.gray(` Model: ${this.model}`));
+        console.log(chalk.gray(` Model: ${this.model}${this.model === DEFAULT_MODEL ? ' (default)' : ''}`));
+        if (this.model === DEFAULT_MODEL) {
+            console.log(chalk.yellow(' Note: Using default model. Start Ollama with another model to use it automatically.'));
+        }
         console.log(chalk.gray(' Type "exit" or "quit" to quit, "clear" to clear history'));
         console.log(chalk.gray(' Type "help" to see available commands\n'));
     }
@@ -50,9 +87,21 @@ class DeepSeekCLI {
 
     async sendToDeepSeek(prompt) {
         try {
-            const fullPrompt = this.history.length > 0 
-                ? this.history.join('\n') + `\n${prompt}` 
-                : prompt;
+            // Construire le prompt complet avec une séparation claire
+            let fullPrompt = '';
+            
+            // Ajouter le pré-prompt
+            fullPrompt += this.prePrompt + '\n\n';
+            
+            // Ajouter l'historique s'il y en a
+            if (this.history.length > 0) {
+                fullPrompt += '=== CONVERSATION HISTORY ===\n';
+                fullPrompt += this.history.join('\n') + '\n';
+                fullPrompt += '===========================\n\n';
+            }
+            
+            // Ajouter la question actuelle
+            fullPrompt += `USER: ${prompt}\nASSISTANT:`;
                 
             const response = await fetch(`${this.baseUrl}/api/generate`, {
                 method: 'POST',
@@ -61,7 +110,7 @@ class DeepSeekCLI {
                 },
                 body: JSON.stringify({
                     model: this.model,
-                    prompt: `${this.prePrompt}\n\n${fullPrompt}`,
+                    prompt: fullPrompt,
                     stream: false,
                     options: {
                         temperature: 0.7,
@@ -82,9 +131,9 @@ class DeepSeekCLI {
             // Nettoyer la réponse des balises <think>
             responseText = this.cleanResponse(responseText);
             
-            // Mise à jour de l'historique
-            addEntry(`Utilisateur: ${prompt}`);
-            addEntry(`DeepSeek: ${responseText}`);
+            // Mise à jour de l'historique avec le format HISTORY:
+            addEntry(`USER: ${prompt}`);
+            addEntry(`ASSISTANT: ${responseText}`);
             
             
             
@@ -197,13 +246,13 @@ class DeepSeekCLI {
             if (ok) {
                 try {
                     const output = await runAction(command);
-                    console.log(chalk.cyan(output));
-                    this.rl.prompt();
-                    return;
+                    console.log(chalk.blue(output));
+                    // this.rl.prompt();
+                    // return;
                 } catch (error) {
                     console.log(chalk.red(`❌ Execution error: ${error.message}`));
-                    this.rl.prompt();
-                    return;
+                    // this.rl.prompt();
+                    // return;
                 }
             }
             // Do not call rl.prompt() here, it will be called automatically
@@ -214,7 +263,7 @@ class DeepSeekCLI {
             return;
         }
         
-        // this.rl.prompt();
+        this.rl.prompt();
     }
 
     // Utilise la fonction confirmExecution importée

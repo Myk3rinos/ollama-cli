@@ -30,7 +30,7 @@ const confirmExecution = (cmd) => {
             stdout.cursorTo(0);
             
             // Calculate how many lines to clear
-            const linesToClear = lastRenderHeight || 5; // By default, clear 5 lines
+            const linesToClear = lastRenderHeight || 1; // By default, clear 5 lines
             
             // Clear previous lines
             for (let i = 0; i < linesToClear; i++) {
