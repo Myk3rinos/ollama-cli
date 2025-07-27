@@ -175,11 +175,11 @@ class DeepSeekCLI {
             console.log(chalk.gray('  clear      - Clear conversation history'));
             console.log(chalk.gray('  help       - Display this help'));
             console.log(chalk.gray('  status     - Check connection to the model'));
-            console.log(chalk.cyan('\n💡 Usage:'));
-            console.log(chalk.gray('  - Ask normal questions for a conversation'));
-            console.log(chalk.gray('  - Ask system actions to execute commands'));
-            console.log(chalk.gray('  - Example: "list files" → execute ls -la'));
-            console.log(chalk.gray('  - Example: "explain Git" → normal conversation\n'));
+            // console.log(chalk.cyan('\n💡 Usage:'));
+            // console.log(chalk.gray('  - Ask normal questions for a conversation'));
+            // console.log(chalk.gray('  - Ask system actions to execute commands'));
+            // console.log(chalk.gray('  - Example: "list files" → execute ls -la'));
+            // console.log(chalk.gray('  - Example: "explain Git" → normal conversation\n'));
             this.rl.prompt();
             return;
         }
@@ -191,13 +191,8 @@ class DeepSeekCLI {
                 const testResponse = await fetch(`${this.baseUrl}/api/tags`);
                 if (testResponse.ok) {
                     const models = await testResponse.json();
-                    const hasDeepSeek = models.models?.some(m => m.name.includes('deepseek-r1'));
-                    if (hasDeepSeek) {
-                        console.log(chalk.green('✅ Connection OK - DeepSeek-R1:14b available'));
-                    } else {
-                        console.log(chalk.yellow('⚠️  Connection OK but DeepSeek-R1:14b not found'));
-                        console.log(chalk.gray('   Install with: ollama pull deepseek-r1:14b'));
-                    }
+                    const modelNames = models.models?.map(m => m.name).sort() || [];
+                    console.log(chalk.green('✅ Connection OK - Models: ' + modelNames.join(', ')));
                 } else {
                     console.log(chalk.red('❌ Connection to Ollama failed'));
                 }
@@ -213,10 +208,11 @@ class DeepSeekCLI {
             this.rl.prompt();
             return;
         }
-        //         // Traitement de la demande
-        // console.log(chalk.blue('...'));
-        // // console.log(chalk.blue('🤔 DeepSeek réfléchit...'));
+
+        // Traitement de la demande
+        // console.log(chalk.blue('🤔 DeepSeek réfléchit...'));
         // const response = await this.sendToDeepSeek(trimmedInput);
+
         // Afficher l'animation de chargement
         loadingAnimation.start();
         let response;
@@ -248,12 +244,12 @@ class DeepSeekCLI {
             if (ok) {
                 try {
                     const output = await runAction(command);
-                    console.log(chalk.blue(output));
+                    console.log(chalk.blue('\n' + output));
                 } catch (error) {
                     console.log(chalk.red(`❌ Execution error: ${error.message}`));
                 }
             } else {
-                console.log(chalk.yellow('Command execution cancelled'));
+                // console.log(chalk.yellow('Command execution cancelled'));
             }
             
             this.rl.prompt();
@@ -261,7 +257,7 @@ class DeepSeekCLI {
             // Do not call rl.prompt() here, it will be called automatically
         } else {
             // Réponse normale
-            console.log(chalk.cyan('\n' + response + '\n'));
+            console.log(chalk.cyan('\n' + ' ' + response + '\n'));
             this.rl.prompt();
             return;
         }
@@ -269,12 +265,9 @@ class DeepSeekCLI {
         // this.rl.prompt();
     }
 
-    // Utilise la fonction confirmExecution importée
-
     start() {
-        console.log(chalk.green(`${this.model} CLI started!`));
-        // console.log(chalk.green('🚀 DeepSeek-R1:14b CLI started!'));
-        console.log(chalk.gray('Type "help" to see available commands\n'));
+        console.log(chalk.green(` ${this.model} CLI started!`));
+        console.log(chalk.gray(' Type "help" to see available commands\n'));
         
         this.rl.prompt();
         
@@ -310,8 +303,8 @@ async function main() {
             model = args[i + 1];
             i++;
         } else if (args[i] === '--help') {
-            console.log(chalk.cyan('DeepSeek-R1:14b CLI'));
-            console.log(chalk.gray('Usage: node deepseek-cli.js [options]'));
+            console.log(chalk.cyan('Synax CLI'));
+            console.log(chalk.gray('Usage: node synax-cli.js [options]'));
             console.log(chalk.gray('Options:'));
             console.log(chalk.gray('  --url <url>     URL of the Ollama server (default: http://localhost:11434)'));
             console.log(chalk.gray('  --model <name>  Name of the model (default: deepseek-r1:14b)'));
