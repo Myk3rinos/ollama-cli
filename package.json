@@ -1,0 +1,35 @@
+{
+  "name": "agent-shell-secure-nodejs",
+  "version": "1.0.0",
+  "description": "Agent IA Shell Sécurisé avec Mistral et Ollama - Version Node.js",
+  "main": "agent-shell-secure.js",
+  "type": "module",
+  "scripts": {
+    "start": "node agent-shell-secure.js",
+    "test": "node test-security.js",
+    "dev": "nodemon agent-shell-secure.js",
+    "docker:build": "docker build -t agent-shell-nodejs .",
+    "docker:run": "docker-compose up -d"
+  },
+  "keywords": [
+    "ai",
+    "shell",
+    "security",
+    "ollama",
+    "mistral",
+    "nodejs"
+  ],
+  "author": "Agent IA Shell Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "winston": "^3.11.0",
+    "chalk": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
