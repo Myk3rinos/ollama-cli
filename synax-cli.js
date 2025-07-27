@@ -66,7 +66,7 @@ class DeepSeekCLI {
             prompt: chalk.blue('> ')
         });
         
-        console.log(chalk.cyan(asciiArt));
+        console.log(chalk.blue(asciiArt));
         console.log(chalk.gray(` Connected to: ${this.baseUrl}`));
         console.log(chalk.gray(` Model: ${this.model}${this.model === DEFAULT_MODEL ? ' (default)' : ''}`));
         // if (this.model === DEFAULT_MODEL) {
@@ -244,18 +244,20 @@ class DeepSeekCLI {
             
             // Ask for user confirmation
             const ok = await confirmExecution(command);
+            
             if (ok) {
                 try {
                     const output = await runAction(command);
                     console.log(chalk.blue(output));
-                    // this.rl.prompt();
-                    // return;
                 } catch (error) {
                     console.log(chalk.red(`❌ Execution error: ${error.message}`));
-                    // this.rl.prompt();
-                    // return;
                 }
+            } else {
+                console.log(chalk.yellow('Command execution cancelled'));
             }
+            
+            this.rl.prompt();
+            return;
             // Do not call rl.prompt() here, it will be called automatically
         } else {
             // Réponse normale
@@ -264,7 +266,7 @@ class DeepSeekCLI {
             return;
         }
         
-        this.rl.prompt();
+        // this.rl.prompt();
     }
 
     // Utilise la fonction confirmExecution importée

@@ -26,23 +26,23 @@ const confirmExecution = (cmd) => {
         let lastRenderHeight = 0;
 
         function render() {
-            // Save cursor position
-            stdout.cursorTo(0);
+            // // Save cursor position
+            // stdout.cursorTo(0);
             
-            // Calculate how many lines to clear
-            const linesToClear = lastRenderHeight || 1; // By default, clear 5 lines
+            // // Calculate how many lines to clear
+            // const linesToClear = lastRenderHeight || 0; // By default, clear 5 lines
             
-            // Clear previous lines
-            for (let i = 0; i < linesToClear; i++) {
-                stdout.clearLine(0);
-                if (i < linesToClear - 1) {
-                    stdout.cursorTo(0);
-                    stdout.moveCursor(0, -1);
-                }
-            }
+            // // Clear previous lines
+            // for (let i = 0; i < linesToClear; i++) {
+            //     stdout.clearLine(0);
+            //     if (i < linesToClear - 1) {
+            //         stdout.cursorTo(0);
+            //         stdout.moveCursor(0, -1);
+            //     }
+            // }
             
-            // Return to the beginning of the render area
-            stdout.cursorTo(0);
+            // // Return to the beginning of the render area
+            // stdout.cursorTo(0);
             
             // Display the message and command
             const message = `${chalk.magenta(`Authorize execution of:`)}${chalk.gray(`\n"${cmd}"`)}\n`;
