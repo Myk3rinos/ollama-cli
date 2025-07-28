@@ -62,7 +62,18 @@ const confirmExecution = (cmd) => {
         }
 
         function cleanup(res) {
-            stdout.write('\n');
+            // Effacer les lignes affichées
+            for (let i = 0; i < lastRenderHeight + 2; i++) {
+                stdout.cursorTo(0);
+                stdout.clearLine(0);
+                if (i < lastRenderHeight + 2 - 1) {
+                    stdout.moveCursor(0, -1);
+                }
+            }
+            // Aller au début de la ligne et effacer le saut de ligne inutile
+            stdout.cursorTo(0);
+            stdout.clearLine(0);
+            // -------------------------------------------- 
             stdin.setRawMode(true);
             stdin.removeListener('data', onData);
             resolve(res);
