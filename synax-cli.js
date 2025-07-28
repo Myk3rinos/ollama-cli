@@ -245,7 +245,8 @@ class DeepSeekCLI {
             if (ok) {
                 try {
                     const output = await runAction(command);
-                    console.log(chalk.blue('\n' + ' 𖡷 ' + output));
+                    // console.log(chalk.blue('\n' + '𖡷 ' + output));
+                    console.log(chalk.magenta('\n' + '𖡷 '),chalk.blue(output));
                 } catch (error) {
                     console.log(chalk.red(`❌ Execution error: ${error.message}`));
                 }
@@ -258,7 +259,7 @@ class DeepSeekCLI {
             // Do not call rl.prompt() here, it will be called automatically
         } else {
             // Réponse normale𖡷
-            console.log(chalk.magenta('\n' + ' 𖡷 '),chalk.cyan(response + '\n'));
+            console.log(chalk.magenta('\n' + ' 𖡷'),chalk.cyan(response + '\n'));
             this.rl.prompt();
             return;
         }
