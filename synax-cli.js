@@ -217,6 +217,7 @@ class DeepSeekCLI {
         loadingAnimation.start();
         let response;
         try {
+            // console.log(' \n');
             response = await this.sendToDeepSeek(trimmedInput);
             loadingAnimation.stop();
         } catch (error) {
@@ -244,7 +245,7 @@ class DeepSeekCLI {
             if (ok) {
                 try {
                     const output = await runAction(command);
-                    console.log(chalk.blue('\n' + output));
+                    console.log(chalk.blue('\n' + ' 𖡷 ' + output));
                 } catch (error) {
                     console.log(chalk.red(`❌ Execution error: ${error.message}`));
                 }
@@ -256,8 +257,8 @@ class DeepSeekCLI {
             return;
             // Do not call rl.prompt() here, it will be called automatically
         } else {
-            // Réponse normale
-            console.log(chalk.cyan('\n' + ' ' + response + '\n'));
+            // Réponse normale𖡷
+            console.log(chalk.magenta('\n' + ' 𖡷 '),chalk.cyan(response + '\n'));
             this.rl.prompt();
             return;
         }
